@@ -1,10 +1,10 @@
 # md2docx_diy
 
-Markdown文档 → 横版中文DOCX格式转换工具。
+Markdown文档 → 中文DOCX格式转换工具。
 
 ## 功能说明
 
-将Markdown文件转换为排版精良的横版A4 Word文档，完整支持中文格式和各类Markdown语法。
+将Markdown文件转换为排版精良的A4 Word文档（支持横版/纵向），完整支持中文格式和各类Markdown语法。
 
 ## 支持的格式
 
@@ -25,7 +25,7 @@ Markdown文档 → 横版中文DOCX格式转换工具。
 
 ## 排版规格
 
-- **页面方向**：横版 A4（29.7cm × 21.0cm）
+- **页面方向**：A4（横版 29.7cm×21.0cm / 纵向 21.0cm×29.7cm，通过 `orientation` 参数控制）
 - **正文字体**：宋体 10.5pt
 - **标题字体**：黑体（各级递减 16pt → 9pt）
 - **页眉**：文件名 + 团队名称（居中）
@@ -51,6 +51,8 @@ python md2docx_diy.py
 ```python
 from md2docx_diy import md_to_docx
 md_to_docx(r'd:\path\to\input.md', r'd:\path\to\output.docx')
+# 纵向排版：
+md_to_docx(r'd:\path\to\input.md', r'd:\path\to\output.docx', orientation='portrait')
 ```
 
 ## 注意事项
