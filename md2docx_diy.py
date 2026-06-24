@@ -280,12 +280,12 @@ def parse_md_table(lines, start):
     return rows, i
 
 
-def render_table(doc, rows):
+def render_table(doc, rows, avail_width=25.0):
     """将二维列表渲染为Word表格。"""
     if not rows:
         return
     n_cols = len(rows[0])
-    avail = 25.0  # 可用宽度(cm)
+    avail = avail_width
 
     table = doc.add_table(rows=len(rows), cols=n_cols)
     table.alignment = WD_TABLE_ALIGNMENT.LEFT
@@ -321,11 +321,11 @@ def render_table(doc, rows):
 # 块级元素
 # ============================================================
 
-def add_code_block(doc, code_lines):
+def add_code_block(doc, code_lines, avail_width=25.0):
     """代码块：灰色背景框。"""
     table = doc.add_table(rows=1, cols=1)
     cell = table.cell(0, 0)
-    cell.width = Cm(25)
+    cell.width = Cm(avail_width)
     shd(cell, 'F5F5F5')
     cell_margins(cell, 0.2, 0.2, 0.3, 0.3)
     para = cell.paragraphs[0]
@@ -402,25 +402,33 @@ def add_heading(doc, text, level, anchor=None):
 # 主转换函数
 # ============================================================
 
-def md_to_docx(md_path, docx_path, header_text=None):
-    """将Markdown文件转换为横版A4中文DOCX。
+def md_to_docx(md_path, docx_path, header_text=None, orientation='landscape'):
+    """将Markdown文件转换为A4中文DOCX。
 
     Args:
         md_path: 输入的Markdown文件路径
         docx_path: 输出的DOCX文件路径
         header_text: 页眉文本（默认使用文件名）
+        orientation: 页面方向，'landscape'（横版）或 'portrait'（纵向），默认 landscape
     """
     with open(md_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
     doc = Document()
     sec = doc.sections[0]
-    sec.page_width = Cm(29.7)
-    sec.page_height = Cm(21.0)
+    if orientation == 'portrait':
+        sec.page_width = Cm(21.0)
+        sec.page_height = Cm(29.7)
+    else:
+        sec.page_width = Cm(29.7)
+        sec.page_height = Cm(21.0)
     sec.left_margin = Cm(2.0)
     sec.right_margin = Cm(2.0)
     sec.top_margin = Cm(1.8)
     sec.bottom_margin = Cm(1.5)
+
+    # 计算可用宽度（页面宽度 - 左右边距）
+    avail_width = 21.0 - 4.0 if orientation == 'portrait' else 29.7 - 4.0
 
     # 页眉
     header = sec.header
@@ -476,7 +484,7 @@ def md_to_docx(md_path, docx_path, header_text=None):
         if is_md_table_start(lines, i):
             rows, next_i = parse_md_table(lines, i)
             if rows:
-                render_table(doc, rows)
+                render_table(doc, rows, avail_width)
                 sp = doc.add_paragraph()
                 para_spacing(sp, before=0, after=4)
             i = next_i
@@ -490,7 +498,7 @@ def md_to_docx(md_path, docx_path, header_text=None):
                 code_lines.append(lines[i])
                 i += 1
             i += 1
-            add_code_block(doc, code_lines)
+            add_code_block(doc, code_lines, avail_width)
             continue
 
         # ---- 分隔线 ----
