@@ -1,3 +1,7 @@
+---
+name: md2docx_diy
+description: Markdown文档 → 中文DOCX格式转换工具。将Markdown文件转换为排版精良的A4 Word文档（支持横版/纵向），完整支持中文格式和各类Markdown语法。
+---
 # md2docx_diy
 
 Markdown文档 → 中文DOCX格式转换工具。
